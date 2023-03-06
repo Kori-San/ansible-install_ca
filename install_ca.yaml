@@ -1,0 +1,36 @@
+---
+- name: Install Certificate Authority
+  hosts: localhost
+  become: yes
+  vars:
+    ca_path:
+      RedHat: /etc/pki/ca-trust/source/anchors
+      Debian: /usr/local/share/ca-certificates 
+
+  tasks:
+  - name: Install CA's Package
+    package: 
+      name: ca-certificates
+      state: present
+
+  - name: Copy CA to 'ca_path'
+    copy:
+      src: '{{ item }}'
+      dest: '{{ ca_path[ansible_os_family] }}/'
+      owner: root
+      group: root
+      mode: 0644
+    with_fileglob:
+      - files/ca/*
+    notify:
+      - Update Debian's CA
+      - Update RedHat's CA
+
+  handlers:
+  - name: Update Debian's CA
+    shell: /usr/sbin/update-ca-certificates
+    when: ansible_os_family == "Debian"
+
+  - name: Update RedHat's CA
+    shell: /bin/update-ca-trust
+    when: ansible_os_family == "RedHat"
