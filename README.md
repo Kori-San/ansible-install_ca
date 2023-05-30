@@ -7,6 +7,6 @@
 
 2. Since it's not a role but a "simple" playbook you can execute it by using the ansible bin.
     ```bash 
-    ansible-playbook -i 'inventory_file' -K 'install_ca.yaml'
+    ansible-playbook -i 'inventory_file' 'install_ca.yaml' -Kk
     ```
     > Note that '-K' is *MANDATORY* since the playbook uses '*become*'.
